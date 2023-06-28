@@ -1,7 +1,7 @@
 import { LitElement, css, html } from 'lit';
 import { property, customElement } from 'lit/decorators.js';
+import { get, set } from 'idb-keyval';
 
-import '@shoelace-style/shoelace/dist/components/card/card.js';
 import '@shoelace-style/shoelace/dist/components/button/button.js';
 
 import { styles } from '../styles/shared-styles';
@@ -11,126 +11,120 @@ export class AppHome extends LitElement {
 
   // For more information on using properties and state in lit
   // check out this link https://lit.dev/docs/components/properties/
-  @property() message = 'Welcome!';
+  @property() exercises: any[] = [];
+  @property() date: string = '';
+  @property() currentWorkoutSaved: boolean = false;
 
   static get styles() {
     return [
       styles,
       css`
-      #welcomeBar {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        flex-direction: column;
-      }
-
-      #welcomeCard,
-      #infoCard {
-        padding: 18px;
-        padding-top: 0px;
-      }
-
-      sl-card::part(footer) {
-        display: flex;
-        justify-content: flex-end;
-      }
-
-      @media(min-width: 750px) {
-        sl-card {
-          width: 70vw;
+        #settings {
+          position: absolute;
+          top: 8px;
+          right: 8px;
         }
-      }
-
-
-      @media (horizontal-viewport-segments: 2) {
-        #welcomeBar {
-          flex-direction: row;
-          align-items: flex-start;
-          justify-content: space-between;
+        h1, h2 {
+          width: 100%;
+          text-align: center;
+          margin: 8px 0;
         }
-
-        #welcomeCard {
-          margin-right: 64px;
+        .timers {
+          display: grid;
+          grid-template-columns: 1fr 1fr 1fr;
         }
-      }
     `];
+  }
+
+  save() {
+    let d = new Date().toLocaleDateString();
+    set(d, this.exercises);
+    this.currentWorkoutSaved = true;
+  }
+
+  settings() {
+    window.location.href='/settings';
   }
 
   constructor() {
     super();
+    let d = new Date().toLocaleDateString();
+    let dOfW = new Date().toLocaleString('en-us', {  weekday: 'long' });
+    this.date = `${ dOfW }, ${ d }`;
   }
 
   async firstUpdated() {
     // this method is a lifecycle even in lit
     // for more info check out the lit docs https://lit.dev/docs/components/lifecycle/
-    console.log('This is your home page');
-  }
-
-  share() {
-    if ((navigator as any).share) {
-      (navigator as any).share({
-        title: 'PWABuilder pwa-starter',
-        text: 'Check out the PWABuilder pwa-starter!',
-        url: 'https://github.com/pwa-builder/pwa-starter',
+    window.addEventListener('data-change', (e: any) => {
+      let exerciseChanged = (<any>e).detail;
+      let exerciseToBeRemoved = this.exercises.find((exercise) => {
+        return exercise.id == exerciseChanged.id
       });
-    }
+      let newExercises: any[] = [];
+      if (exerciseChanged.delete) {
+        let removalIndex = this.exercises.indexOf(exerciseToBeRemoved);
+        newExercises = this.exercises.slice();
+        newExercises.splice(removalIndex,1);
+      } else {
+        this.exercises.forEach((exercise) => {
+          if (exercise.id == exerciseChanged.id) {
+            for(let prop in exerciseChanged) exercise[prop]=exerciseChanged[prop];
+          }
+          newExercises.push(exercise);
+        });
+      }
+      this.currentWorkoutSaved = false;
+      this.exercises = newExercises;
+      set('exercises', this.exercises);
+    });
+    window.addEventListener('add-exercise', (e: any) => {
+      let newExercises = [...this.exercises];
+      let newExercise = {
+        id: newExercises.length + 1,
+        name: 'New',
+        weight: 0,
+        reps: 0,
+        done: false,
+        difficulty: 'easy'
+      };
+      newExercises.push(newExercise);
+      this.currentWorkoutSaved = false;
+      this.exercises = newExercises;
+      set('exercises', this.exercises);
+    });
+    get('exercises').then((exercises) => {
+      this.exercises = exercises;
+    });
+    let d = new Date().toLocaleDateString();
+    get(d).then((workout) => {
+      console.log(workout);
+      if (workout && workout.length > 0) {
+        this.currentWorkoutSaved = true;
+      }
+    });
+
+
   }
 
   render() {
+    let saveIcon = html``;
+    if (this.currentWorkoutSaved) {
+      saveIcon = html`<span style="color: green;"><sl-icon name="calendar-heart" label="Save workout" @click=${ this.save }></sl-icon></span>`;
+    } else {
+      saveIcon = html`<span style="color: red;"><sl-icon name="calendar-heart" label="Save workout" @click=${ this.save }></sl-icon></span>`;
+    }
     return html`
-      <app-header></app-header>
-
       <main>
-        <div id="welcomeBar">
-          <sl-card id="welcomeCard">
-            <div slot="header">
-              <h2>${this.message}</h2>
-            </div>
-
-            <p>
-              For more information on the PWABuilder pwa-starter, check out the
-              <a href="https://docs.pwabuilder.com/#/starter/quick-start">
-                documentation</a>.
-            </p>
-
-            <p id="mainInfo">
-              Welcome to the
-              <a href="https://pwabuilder.com">PWABuilder</a>
-              pwa-starter! Be sure to head back to
-              <a href="https://pwabuilder.com">PWABuilder</a>
-              when you are ready to ship this PWA to the Microsoft Store, Google Play
-              and the Apple App Store!
-            </p>
-
-            ${'share' in navigator
-              ? html`<sl-button slot="footer" variant="primary" @click="${this.share}">Share this Starter!</sl-button>`
-              : null}
-          </sl-card>
-
-          <sl-card id="infoCard">
-            <h2>Technology Used</h2>
-
-            <ul>
-              <li>
-                <a href="https://www.typescriptlang.org/">TypeScript</a>
-              </li>
-
-              <li>
-                <a href="https://lit.dev">lit</a>
-              </li>
-
-              <li>
-                <a href="https://shoelace.style/">Shoelace</a>
-              </li>
-
-              <li>
-                <a href="https://github.com/thepassle/app-tools/blob/master/router/README.md"
-                  >App Tools Router</a>
-              </li>
-            </ul>
-          </sl-card>
-
-          <sl-button href="${(import.meta as any).env.BASE_URL}about" variant="primary">Navigate to About</sl-button>
+        <sl-icon id="settings" name="gear" label="Settings" @click=${ this.settings }></sl-icon>
+        <h1>Rack Track</h1>
+        <div class="timers">
+          <app-timer .title="${ 'Timer 1' }" .duration=${ 60 }></app-timer>
+          <app-timer .title="${ 'Timer 2' }" .duration=${ 30 }></app-timer>
+        </div>
+        <h2>${ this.date } ${ saveIcon }</h2>
+        <div>
+          <app-workout .date="${ new Date().getTime() }" .exercises="${ this.exercises }"></app-workout>
         </div>
       </main>
     `;

@@ -1,10 +1,15 @@
 import { LitElement, css } from 'lit';
 import { customElement } from 'lit/decorators.js';
+import { set, get } from 'idb-keyval';
 
 import './pages/app-home';
+import './components/timer';
+import './components/exercise';
 import './components/header';
+import './components/workout';
 import './styles/global.css';
 import { router } from './router';
+import { setBasePath } from '@shoelace-style/shoelace/dist/utilities/base-path.js';
 
 @customElement('app-index')
 export class AppIndex extends LitElement {
@@ -20,6 +25,7 @@ export class AppIndex extends LitElement {
 
   constructor() {
     super();
+    setBasePath('/node_modules/@shoelace-style/shoelace/dist');
   }
 
   firstUpdated() {

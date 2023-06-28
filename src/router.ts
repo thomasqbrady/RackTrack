@@ -24,12 +24,12 @@ export const router = new Router({
         render: () => html`<app-home></app-home>`
       },
       {
-        path: `${baseURL}about`,
-        title: 'About',
+        path: `/settings`,
+        title: 'Settings',
         plugins: [
-          lazy(() => import('./pages/app-about/app-about.js')),
+          lazy(() => import('./pages/settings/settings.js')),
         ],
-        render: () => html`<app-about></app-about>`
+        render: () => html`<app-settings></app-settings>`
       }
     ]
   });

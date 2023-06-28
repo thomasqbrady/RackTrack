@@ -5,6 +5,10 @@
 */
 :root {
   --font-family: sans-serif;
+  --sl-input-height-large: 80px;
+  --sl-toggle-size-medium: 24px;
+  --sl-input-font-size-medium:20px;
+  --sl-input-font-size-large: 72px;
 }
 
 html, body {
