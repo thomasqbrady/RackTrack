@@ -9,6 +9,9 @@ export default defineConfig({
     assetsDir: "code",
     target: ["esnext", "edge100", "firefox100", "chrome100", "safari18"],
   },
+  server: {
+    port: 3000
+  },
   plugins: [
     VitePWA({
       strategies: "injectManifest",
