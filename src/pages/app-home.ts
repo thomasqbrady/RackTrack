@@ -78,7 +78,7 @@ export class AppHome extends LitElement {
       this.exercises = newExercises;
       set('exercises', this.exercises);
     });
-    window.addEventListener('add-exercise', (e: any) => {
+    window.addEventListener('add-exercise', () => {
       let newExercises = [...this.exercises];
       let newExercise = {
         id: newExercises.length + 1,

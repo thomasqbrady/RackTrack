@@ -75,7 +75,7 @@ export class AppExercise extends LitElement {
   }
 
   save() {
-    let n, w, r, d, done;
+    let n, w, r, d;
     let nameEl: Element | null | undefined = this.renderRoot.querySelector('#name');
     if (nameEl) {
       n = (<SlInput>nameEl).value;

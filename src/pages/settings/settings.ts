@@ -38,7 +38,7 @@ export class AppSettings extends LitElement {
     let ta: HTMLTextAreaElement | null = this.renderRoot.querySelector('#import');
     if (ta?.value) {
       let newData = JSON.parse(ta?.value);
-      newData.forEach((entry) => {
+      newData.forEach((entry: any[]) => {
         set(entry[0], entry[1]);
       });
     }
