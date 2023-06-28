@@ -1,6 +1,5 @@
 import { LitElement, css } from 'lit';
 import { customElement } from 'lit/decorators.js';
-import { set, get } from 'idb-keyval';
 
 import './pages/app-home';
 import './components/timer';
