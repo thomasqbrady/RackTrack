@@ -94,7 +94,7 @@ export class AppHome extends LitElement {
       set('exercises', this.exercises);
     });
     get('exercises').then((exercises) => {
-      if (exercises.length > 0) {
+      if (exercises && exercises.length > 0) {
         this.exercises = exercises;
       }
     });
