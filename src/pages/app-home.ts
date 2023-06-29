@@ -94,7 +94,9 @@ export class AppHome extends LitElement {
       set('exercises', this.exercises);
     });
     get('exercises').then((exercises) => {
-      this.exercises = exercises;
+      if (exercises.length > 0) {
+        this.exercises = exercises;
+      }
     });
     let d = new Date().toLocaleDateString();
     get(d).then((workout) => {
