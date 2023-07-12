@@ -53,6 +53,14 @@ export class AppHome extends LitElement {
     this.date = `${ dOfW }, ${ d }`;
   }
 
+  sortExercises(a: any, b: any):number {
+    if (!a.hasOwnProperty('index')) {
+      return 1;
+    } else {
+      return a.index - b.index
+    }
+  }
+
   async firstUpdated() {
     // this method is a lifecycle even in lit
     // for more info check out the lit docs https://lit.dev/docs/components/lifecycle/
@@ -75,11 +83,11 @@ export class AppHome extends LitElement {
         });
       }
       this.currentWorkoutSaved = false;
-      this.exercises = newExercises;
+      this.exercises = newExercises.sort(this.sortExercises);
       set('exercises', this.exercises);
     });
     window.addEventListener('add-exercise', () => {
-      let newExercises = [...this.exercises];
+      let newExercises = [...this.exercises].sort(this.sortExercises);
       let newExercise = {
         id: newExercises.length + 1,
         name: 'New',
@@ -90,12 +98,12 @@ export class AppHome extends LitElement {
       };
       newExercises.push(newExercise);
       this.currentWorkoutSaved = false;
-      this.exercises = newExercises;
+      this.exercises = newExercises.sort(this.sortExercises);
       set('exercises', this.exercises);
     });
     get('exercises').then((exercises) => {
       if (exercises && exercises.length > 0) {
-        this.exercises = exercises;
+        this.exercises = exercises.sort(this.sortExercises);
       }
     });
     let d = new Date().toLocaleDateString();

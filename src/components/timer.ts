@@ -1,5 +1,5 @@
 import { LitElement, css, html } from 'lit';
-import { property, customElement } from 'lit/decorators.js';
+import { property, state, customElement } from 'lit/decorators.js';
 
 import '@shoelace-style/shoelace/dist/components/button/button.js';
 import '@shoelace-style/shoelace/dist/components/button-group/button-group.js';
@@ -16,6 +16,9 @@ export class AppTimer extends LitElement {
   @property({ type: Boolean }) running = false;
   @property({ type: Boolean }) editing = false;
   @property({ type: Number }) timer = 0;
+
+  @state() protected _ding = new Audio('assets/ding.mp3');
+  @state() protected _finished = false;
 
   static get styles() {
     return css`
@@ -54,8 +57,12 @@ export class AppTimer extends LitElement {
             let currentTime = new Date().getTime();
             let remains = this.duration - (this.elapsedTime + Math.floor((currentTime - this.startTime)/1000));
             if (remains <= 0) {
+              if (this._finished) {
                 this.renderRoot.querySelector(".timer")?.classList.add('finished');
                 this.remainingTime = 0;
+                this._ding.play();
+                this._finished = true;
+              }
             } else {
                 this.remainingTime = remains;
             }
@@ -82,6 +89,7 @@ export class AppTimer extends LitElement {
     this.paused = this.running = false;
     this.elapsedTime = 0;
     this.remainingTime = this.duration;
+    this._finished = false;
   }
 
   edit() {
