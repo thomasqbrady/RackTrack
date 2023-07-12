@@ -62,11 +62,11 @@ export class AppTimer extends LitElement {
                 this.remainingTime = 0;
                 this._ding.play();
                 this._finished = true;
-                this.remainingTime = remains;
               }
             } else {
+              this.remainingTime = remains;
             }
-        }
+          }
     }, 100);
   }
 
