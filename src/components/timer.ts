@@ -57,14 +57,14 @@ export class AppTimer extends LitElement {
             let currentTime = new Date().getTime();
             let remains = this.duration - (this.elapsedTime + Math.floor((currentTime - this.startTime)/1000));
             if (remains <= 0) {
-              if (this._finished) {
+              if (!this._finished) {
                 this.renderRoot.querySelector(".timer")?.classList.add('finished');
                 this.remainingTime = 0;
                 this._ding.play();
                 this._finished = true;
+                this.remainingTime = remains;
               }
             } else {
-                this.remainingTime = remains;
             }
         }
     }, 100);
