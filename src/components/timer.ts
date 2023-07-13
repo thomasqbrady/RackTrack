@@ -47,6 +47,8 @@ export class AppTimer extends LitElement {
   }
 
   start() {
+    this._ding.play();
+    this._ding.pause();
     let ns: any = (<any>window).ns;
     ns.enable();
     this.startTime = new Date().getTime();
